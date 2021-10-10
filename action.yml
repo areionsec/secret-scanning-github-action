@@ -1,0 +1,19 @@
+name: 'Secret Scanning'
+description: ''
+author: 'Dazz.'
+inputs:
+  webhook_url:
+    description: 'Secret Scanning Webhook URL'
+    required: false
+    default: 'https://go1oardsnc.execute-api.us-east-2.amazonaws.com/secret-scanning'
+  timeout_seconds:
+    description: 'Timeout seconds for the scanning (default is 2 minutes)'
+    required: false
+    default: '120'
+  token:
+    description: 'GitHub Temporary Token'
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
