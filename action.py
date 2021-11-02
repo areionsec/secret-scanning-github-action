@@ -135,7 +135,7 @@ def main():
     details = collect_details()
     try:
         input_webhook_url = os.getenv("INPUT_WEBHOOK_URL")
-        input_timeout_seconds = float(os.getenv("INPUT_TIMEOUT_SECONDS"))
+        input_timeout_seconds = float(os.getenv("INPUT_TIMEOUT_SECONDS", DEFAULT_TIMEOUT_SECONDS))
         GitHubSecretScanner.create(input_webhook_url, details, timeout_seconds=input_timeout_seconds).run()
         print("::notice::no secrets found \U0001f44d")
     except TimeoutError:
