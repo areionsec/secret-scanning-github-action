@@ -145,6 +145,7 @@ def main():
         print("::error::found valid secrets on code!")
         sys.exit(1)
     except Exception:
+        logger.exception("action failed!")
         print("::error::action failed!")
         sys.exit(1)
 
