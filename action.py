@@ -98,6 +98,19 @@ class GitHubSecretScanner(Worker):
             raise ValidSecretsException()
 
         if result["status"] != "just_created":
+            for secret in result.get("details", []):
+                if secret["is_valid"] in ["IS_SECRET_VALID_UNSPECIFIED", "IS_SECRET_VALID_NO"]:
+                    print(
+                        f"::notice file={secret['file_path']}::found invalid secret {secret['secret_value']} of {secret['secret_type']}"
+                    )
+                elif secret["is_valid"] in ["IS_SECRET_VALID_YES"]:
+                    print(
+                        f"::error file={secret['file_path']}::found valid secret {secret['secret_value']} of {secret['secret_type']}"
+                    )
+                else:
+                    print(
+                        f"::warning file={secret['file_path']}::found unknown secret {secret['secret_value']} of {secret['secret_type']}"
+                    )
             return
 
         raise Delay()
