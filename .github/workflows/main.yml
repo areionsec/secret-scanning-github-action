@@ -12,3 +12,5 @@ jobs:
       - name: Test Action Step
         uses: ./
         id: action
+        with:
+          webhook_url: 'https://uifwombg4l.execute-api.us-east-2.amazonaws.com/secret-scanning'

@@ -3,6 +3,8 @@ import logging
 import os
 import sys
 import time
+import uuid
+from functools import cached_property
 from urllib.request import Request, urlopen
 
 logger = logging.getLogger()
@@ -31,6 +33,7 @@ class Response:
 class Requests:
     JSON_MODULE = json
 
+    # noinspection PyShadowingNames
     @classmethod
     def post(cls, url, json):
         request = Request(
@@ -70,10 +73,15 @@ class Worker:
 
 
 class GitHubSecretScanner(Worker):
-    def __init__(self, webhook_url, github_details, timeout_seconds: float, delay_seconds: float):
+    def __init__(self, webhook_url, github_details, action_unique_id, timeout_seconds: float, delay_seconds: float):
         super().__init__(timeout_seconds, delay_seconds)
         self.webhook_url = webhook_url
-        self.github_details = github_details
+        self._github_details = github_details
+        self.action_unique_id = action_unique_id
+
+    @cached_property
+    def github_details(self):
+        return dict(self._github_details, action_unique_id=self.action_unique_id)
 
     def execute(self):
         response = requests.post(self.webhook_url, json=self.github_details)
@@ -96,9 +104,15 @@ class GitHubSecretScanner(Worker):
 
     @classmethod
     def create(
-        cls, webhook_url, github_details, timeout_seconds=DEFAULT_TIMEOUT_SECONDS, delay_seconds=DEFAULT_DELAY_SECONDS
+        cls,
+        webhook_url,
+        github_details,
+        action_unique_id=None,
+        timeout_seconds=DEFAULT_TIMEOUT_SECONDS,
+        delay_seconds=DEFAULT_DELAY_SECONDS,
     ):
-        return cls(webhook_url, github_details, timeout_seconds, delay_seconds)
+        action_unique_id = action_unique_id or uuid.uuid4().hex
+        return cls(webhook_url, github_details, action_unique_id, timeout_seconds, delay_seconds)
 
 
 def collect_details():
@@ -107,7 +121,8 @@ def collect_details():
 
     return {
         "github_repository": event["repository"]["full_name"],
-        "github_run_id": f'{os.getenv("GITHUB_RUN_ID")}-{os.getenv("GITHUB_RUN_NUMBER")}',
+        "github_run_id": os.getenv("GITHUB_RUN_ID"),
+        "github_run_number": os.getenv("GITHUB_RUN_NUMBER"),
         "github_sha": event["pull_request"]["head"]["sha"],
         "github_head_ref": os.getenv("GITHUB_HEAD_REF"),
         "github_base_ref": os.getenv("GITHUB_BASE_REF"),
@@ -119,9 +134,9 @@ def collect_details():
 def main():
     details = collect_details()
     try:
-        GitHubSecretScanner.create(
-            os.getenv("INPUT_WEBHOOK_URL"), details, timeout_seconds=float(os.getenv("INPUT_TIMEOUT_SECONDS"))
-        ).run()
+        input_webhook_url = os.getenv("INPUT_WEBHOOK_URL")
+        input_timeout_seconds = float(os.getenv("INPUT_TIMEOUT_SECONDS", DEFAULT_TIMEOUT_SECONDS))
+        GitHubSecretScanner.create(input_webhook_url, details, timeout_seconds=input_timeout_seconds).run()
         print("::notice::no secrets found \U0001f44d")
     except TimeoutError:
         print("::error::action timeout!")
@@ -130,6 +145,7 @@ def main():
         print("::error::found valid secrets on code!")
         sys.exit(1)
     except Exception:
+        logger.exception("action failed!")
         print("::error::action failed!")
         sys.exit(1)
 
