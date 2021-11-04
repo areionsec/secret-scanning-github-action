@@ -17,9 +17,7 @@ def test_action__got_valid_secrets_exception(httpserver: HTTPServer, monkeypatch
     monkeypatch.setenv("INPUT_WEBHOOK_URL", httpserver.url_for("/secret_scanning")),
 
     event = tempfile.NamedTemporaryFile(suffix=".json")
-    event.write(
-        json.dumps({"repository": {"full_name": "my/repository"}, "pull_request": {"head": {"sha": "my_sha"}}}).encode()
-    )
+    event.write(json.dumps({"repository": {"full_name": "my/repository"}}).encode())
     event.flush()
     monkeypatch.setenv("GITHUB_EVENT_PATH", event.name)
 
@@ -55,9 +53,7 @@ def test_action__got_valid(httpserver: HTTPServer, monkeypatch):
     monkeypatch.setenv("INPUT_WEBHOOK_URL", httpserver.url_for("/secret_scanning")),
 
     event = tempfile.NamedTemporaryFile(suffix=".json")
-    event.write(
-        json.dumps({"repository": {"full_name": "my/repository"}, "pull_request": {"head": {"sha": "my_sha"}}}).encode()
-    )
+    event.write(json.dumps({"repository": {"full_name": "my/repository"}}).encode())
     event.flush()
     monkeypatch.setenv("GITHUB_EVENT_PATH", event.name)
 
@@ -90,9 +86,7 @@ def test_action__got_just_created(httpserver: HTTPServer, monkeypatch):
     monkeypatch.setenv("INPUT_WEBHOOK_URL", httpserver.url_for("/secret_scanning")),
 
     event = tempfile.NamedTemporaryFile(suffix=".json")
-    event.write(
-        json.dumps({"repository": {"full_name": "my/repository"}, "pull_request": {"head": {"sha": "my_sha"}}}).encode()
-    )
+    event.write(json.dumps({"repository": {"full_name": "my/repository"}}).encode())
     event.flush()
     monkeypatch.setenv("GITHUB_EVENT_PATH", event.name)
 

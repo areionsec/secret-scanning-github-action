@@ -87,7 +87,6 @@ class GitHubSecretScanner(Worker):
             "github_head_ref": self.context.github_head_ref,
             "github_base_ref": self.context.github_base_ref,
             "github_token": self.context.github_token,
-            "github_sha": self.context.github_sha,
             "github_repository": self.context.github_repository,
         }
 
@@ -145,7 +144,6 @@ class Context:
     github_head_ref: str
     github_base_ref: str
     github_token: str
-    github_sha: str
     github_repository: str
     input_webhook_url: str
     input_timeout_seconds: float
@@ -164,7 +162,6 @@ class Context:
             github_token=os.getenv("INPUT_TOKEN"),
             input_webhook_url=os.getenv("INPUT_WEBHOOK_URL"),
             github_repository=event["repository"]["full_name"],
-            github_sha=event["pull_request"]["head"]["sha"],
             input_timeout_seconds=float(os.getenv("INPUT_TIMEOUT_SECONDS", DEFAULT_TIMEOUT_SECONDS)),
         )
 
