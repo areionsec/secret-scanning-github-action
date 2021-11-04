@@ -8,6 +8,5 @@
 .venv
 
 # Python
-*.py
 *.pyc
 *.pyx
