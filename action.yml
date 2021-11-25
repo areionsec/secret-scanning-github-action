@@ -2,6 +2,10 @@ name: 'Secret Scanning'
 description: ''
 author: 'Dazz'
 inputs:
+  api_key:
+    description: 'Dazz API Key'
+    required: false
+    default: ""
   webhook_url:
     description: 'Secret Scanning Webhook URL'
     required: false
@@ -19,6 +23,7 @@ runs:
   steps:
     - uses: docker://public.ecr.aws/g5i0b9w7/secret-scanning-action:0.0.12
       with:
+        api_key: ${{inputs.api_key}}
         webhook_url: ${{inputs.webhook_url}}
         timeout_seconds: ${{inputs.timeout_seconds}}
         token: ${{inputs.token}}
