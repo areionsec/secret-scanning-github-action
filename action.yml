@@ -1,6 +1,6 @@
 name: 'Secret Scanning'
 description: ''
-author: 'Dazz.'
+author: 'Dazz'
 inputs:
   webhook_url:
     description: 'Secret Scanning Webhook URL'
@@ -15,5 +15,10 @@ inputs:
     required: false
     default: ${{ github.token }}
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: 'composite'
+  steps:
+    - uses: docker://public.ecr.aws/g5i0b9w7/secret-scanning-action:0.0.12
+      with:
+        webhook_url: ${{inputs.webhook_url}}
+        timeout_seconds: ${{inputs.timeout_seconds}}
+        token: ${{inputs.token}}

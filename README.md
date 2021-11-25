@@ -1,4 +1,4 @@
-# Dazz. Secret Scanning Github Action
+# Dazz - Secret Scanning Action
 
 ## Usage
 

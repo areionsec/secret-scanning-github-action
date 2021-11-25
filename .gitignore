@@ -1,12 +1,2 @@
-# Pytest
-.pytest_cache
-
-# Intellij
+# Jetbrains
 .idea
-
-# Virtualenv
-.venv
-
-# Python
-*.pyc
-*.pyx
